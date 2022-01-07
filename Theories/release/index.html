@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- !! IMPORTANT !! -->
+    <!-- Content-Security-Policy no longer required. Will show warning in devtools. Can be ignored -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'"> -->
+    <title>Hello World!</title>
+    <style>
+      html {
+        font-family: sans-serif;
+        background: #2b2e3b;
+        color: #9feaf9;
+      }
+    </style>
+  </head>
+  <body>
+    <!--************************************************** Network Detection ***************************************** -->
+
+    <h1>App is: <u id="status"></u></h1>
+
+    <!--***************************************************** Preload ********************************************** -->
+
+    <p>
+      Using Node.js
+      <script>
+        document.write(versions.node);
+      </script>
+      and Electron
+      <script>
+        document.write(versions.electron);
+      </script>
+    </p>
+
+    <br /><textarea id="content" rows="8" cols="80"></textarea> <br /><button
+      id="save"
+      onclick="saveText()"
+    >
+      Save Content
+    </button>
+
+    <script>
+      // You can also require other files to run in this process
+      // require('./renderer.js');
+
+      // ************************************************** Network Detection ***************************************************
+
+      // Using Chromiums native HTML5 Network API, we can check the status of the user's internet connection. This being an HTML5
+      // API however, it is only available in the Renderer process. IPC messaging provide a simple means to communicate any data
+      // exclusive to the Renderer directly with the Main process. This makes HTML5 APIs a powerful feature for any Electron app.
+
+      // const setStatus = (status) => {
+      //   const statusNode = document.getElementById('status');
+      //   statusNode.innerText = status ? 'Online' : 'Offline';
+      // };
+
+      // setStatus(navigator.onLine);
+
+      // window.addEventListener('online', (e) => {
+      //   setStatus(true);
+      // });
+
+      // window.addEventListener('offline', (e) => {
+      //   setStatus(false);
+      // });
+
+      // ************************************************** Notification ***************************************************
+
+      // const remote = require('@electron/remote');
+
+      // setTimeout(() => {
+      //   const self = remote.getCurrentWindow();
+
+      //   let notification = new Notification('Electron App', {
+      //     body: 'Some notification info!',
+      //   });
+
+      //   notification.onclick = (e) => {
+      //     console.log(self.isVisible())
+      //     if (!self.isVisible()) self.show();
+      //   };
+      // }, 2000);
+
+      // ************************************************** Preload ****************************************************
+
+      const saveText = (e) => {
+        const text = document.getElementById('content').value;
+
+        writeToFile(text);
+      };
+    </script>
+  </body>
+</html>

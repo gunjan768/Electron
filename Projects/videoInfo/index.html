@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form>
+        <div>
+            <label>Select a video</label>
+            <input type="file" accept="video/*"/>
+        </div>
+        <button type="submit">Get Info</button>
+    </form>
+    
+    <h1></h1>
+    <script>
+        // require statement exists only inside the nodejs environment and not in the browser. Type 'require' in the Google
+        // chorme's console (developer tools), it will throw 'Uncaught ReferenceError: require is not defined'. But when you
+        // type it in the MainWindow, it will recognize the require statement. Because Electron provides more feature to it.
+        // MainWindow has both NodeJs (eg: require) and Google Chrome features.
+        const electron = require('electron');
+        const {ipcRenderer} = electron;
+
+        document.querySelector('form').addEventListener('submit', (event) => {
+            event.preventDefault();
+            
+            // Wherever the compiler will find the 'debugger' statement, execution will stop there at that line. Uncomment
+            // the below line to see it.
+            // debugger
+
+            const {path} = document.querySelector('input').files[0];
+            console.log("Path: ", path);
+            // You can name the event anything. Like "videoSubmitted", "getLength", "video:submit", etc.
+            ipcRenderer.send('video:submit', path);
+        });
+        
+        ipcRenderer.on('videoLength', (event, duration) => {
+            document.querySelector('h1').innerHTML = `Length of the video is ${duration}`
+        });
+    </script>
+</body>
+</html>

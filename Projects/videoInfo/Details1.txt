@@ -1,0 +1,11 @@
+-> Electron is a framework for creating desktop apps while using familiar web technology tools.
+-> Websites or web apps running in your browsers can't access a lot of lower level features of your OS like hard drive.
+
+--> Electron works indentical to how Google Chrome works. Google chorome renders each tab separately and each tab which is
+rendered is called Child Process or Renderer Process. Tabs don't directly talk with overall Chrome app. They talk to each other
+through Inter Process Communication (IPC).
+
+## UNder the hood, ELectron makes use of the chromium open source project which is exact same codebase that the Google Chrome
+browser is based upon. We are going to create an object or a process that spawns one Main Window and that is going to have
+some number of Child Rendered Process. The purpose of each of these renderer process in our Elecrton app is to show a separate
+window to use or in a sort of desktop looking environment. These children talk by the same IPC.

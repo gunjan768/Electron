@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- !! IMPORTANT !! -->
+    <!-- Content-Security-Policy no longer required. Will show warning in devtools. Can be ignored -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'"> -->
+    <title>Hello World!</title>
+    <style>
+      html {
+        font-family: sans-serif;
+        background: #2b2e3b;
+        color: #9feaf9;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>process module</h1>
+
+    <br /><button type="button" onclick="process.hang()">Hang Renderer</button>
+    <br /><button type="button" onclick="process.crash()">
+      Crash Renderer
+    </button>
+
+    <br /><br /><br />
+
+    <h1>Shell module</h1>
+
+    <button onclick="showSite()">Launch Electron.js Site</button><br />
+    <button onclick="openSplash()">Open Splash.png</button><br />
+    <button onclick="showSplashFile()">Show Splash.png</button><br />
+    <button onclick="deleteSplashFile()">Delete Splash.png</button><br />
+
+    <br /><br /><br />
+
+    <h1>Native Image</h1>
+
+    <button onclick="toPng()">PNG</button>
+    <button onclick="toJpg()">JPG</button>
+    <button onclick="toTag()">Show</button>
+    <br />
+    <img src="" id="preview" />
+
+    <br /><br /><br />
+
+    <h1>Clipboard module</h1>
+
+    <br /><button onclick="makeUpper()">Make clipboard uppercase</button>
+    <br /><button onclick="showImage()">Show clipboard image</button>
+
+    <br /><img src="" id="cbImage" />
+
+    <script>
+      // let i = 1
+      // setInterval(() => {
+      //   console.log(i)
+      //   i++
+      // }, 500)
+
+      console.log(process.versions);
+
+      // ************************************************ shell *****************************************************
+      // The shell module allows an Electron app to open resources using the operating system's default apps for the given 
+      // resource. When developing an Electron app, we should focus on the core functionality of our app. Handling "other" 
+      // resource types, such as images or urls, is not only difficult to do, but also unnecesary as the user already have 
+      // dedicated system apps for this.
+      const { shell } = require('electron');
+
+      const showSite = (e) => {
+        shell.openExternal('https://electronjs.org');
+      };
+
+      const splashPath = `${__dirname}\\splash.png`;
+      console.log(__dirname);
+      const openSplash = (e) => {
+        // openPath() will open the resource with system default application like for image resource, image viewer (application)
+        // is used to open.
+        shell.openPath(splashPath);
+      };
+
+      const showSplashFile = (e) => {
+        shell.showItemInFolder(splashPath);
+      };
+
+      const deleteSplashFile = (e) => {
+        // This moves a path to the OS-specific trash location (Trash on macOS, Recycle Bin on Windows, and a desktop-environment
+        // -specific location on Linux).
+        shell.trashItem(splashPath);
+      };
+
+      // ************************************************ Native Image *****************************************************
+
+      // The nativeImage module can be used to create an Electron image object from a single image. This nativeImage object 
+      // then allows us to work with that image across various Electron modules, such as the Tray module.
+
+      // All Electron image data is wrapped and returned as a "nativeImage" object. This includes screen captures from the 
+      // "desktopCapturer" module and image data read using the "clipboard" module.
+      
+      // In Electron, for the APIs that take images, you can pass either file paths or NativeImage instances. An empty image
+      // will be used when null is passed. NativeImage creates tray, dock, and application icons using PNG or JPG files.
+
+      // A "nativeImage" instance will allow us to perform most common image tasks to manipulate that image data. The module 
+      // itself cannot however write or delete data to disk.
+      const { nativeImage, ipcRenderer } = require('electron');
+      const fs = require('fs');
+
+      const splash = nativeImage.createFromPath(`${__dirname}/splash.png`);
+
+      const saveToDesktop = async (data, ext) => {
+        let desktopPath = await ipcRenderer.invoke('app-path');
+        fs.writeFile(`${desktopPath}/splash.${ext}`, data, console.log);
+      };
+
+      const toTag = (e) => {
+        let size = splash.getSize();
+
+        let splashURL = splash
+          .resize({
+            width: Math.round(size.width / 4),
+            height: Math.round(size.height / 4),
+          })
+          .toDataURL();
+        document.getElementById('preview').src = splashURL;
+      };
+
+      const toPng = (e) => {
+        let pngSplash = splash.toPNG();
+        saveToDesktop(pngSplash, 'png');
+      };
+
+      const toJpg = (e) => {
+        // toJPEG(image_quality_percentage_of_the_original_photo)
+        let jpgSplash = splash.toJPEG(100);
+        saveToDesktop(jpgSplash, 'jpg');
+      };
+
+      // ************************************************* Clipboard ********************************************************
+
+      const { clipboard } = require('electron');
+
+      console.log(clipboard.readText());
+
+      const showImage = (e) => {
+        let image = clipboard.readImage();
+        document.getElementById('cbImage').src = image.toDataURL();
+      };
+
+      const makeUpper = (e) => {
+        let cbText = clipboard.readText();
+        clipboard.writeText(cbText.toUpperCase());
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- !! IMPORTANT !! -->
+    <!-- Content-Security-Policy no longer required. Will show warning in devtools. Can be ignored -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'"> -->
+    <title>Hello World!</title>
+    <style>
+      html { font-family: sans-serif; background: #2B2E3B; color: #9FEAF9; }
+      a { color: white; }
+    </style>
+  </head>
+  <body>
+
+    <h3><a href="https://developer.mozilla.org" target="_blank">New Window setting target = _blank</a></h3>
+    <h3><a href="#" onclick="newWin()">New Window</a></h3>
+    <h3><a href="#" onclick="closeWin()">Close Window</a></h3>
+    <h3><a href="#" onclick="styleWin()">Bad Fonts</a></h3>
+
+		<img src="https://placekitten.com/450/300" alt="">
+    <br>
+    <button onclick="zoomUp()">Increase Zoom</button>
+    <button onclick="zoomDown()">Decrease Zoom</button>
+    <button onclick="zoomReset()">Reset Zoom</button>
+
+		<img width="100%" src="" id="screenshot"><br>
+    <button id="screenshot-button">Get Screenshot</button>
+
+    <script>
+			// You can also require other files to run in this process
+		 	require('./renderer.js')
+
+      let win;
+
+			// There are 2 ways for Electron to create new browser window automatically:
+			// 1) By using "_blank" as target to anchor tag.
+			// 2) window.open("./index.html")
+
+			//  However a window.open() call will create another window by instantiating BrowserWindow class which will start a 
+			// renderer process. However, this window has limited functionality as described here.
+      const newWin = () => {
+        // win holds the "browser window proxy object" returned by window.open() to open new browser window in Electron.
+				// When calling "open" on the native "window" object of a BrowserWindow's webContents (Chromium browser), a reference
+				// to that window gets returned as a "BrowserWindowProxy" object. It creates a window of the size 600x300 if no
+				// dimension is mentioned.
+        win = window.open('https://developer.mozilla.org', '_blank', 'width=500,height=450,alwaysOnTop=1')
+      }
+
+      const closeWin = () => {
+        win.close()
+      }
+
+      const styleWin = () => {
+        win.eval("document.getElementsByTagName('h1')[0].style.fontFamily = 'Comic Sans MS'")
+      }
+
+			// The "webFrame" module controls the rendering of a window's contents. This includes things like zoom levels, spelling
+			// and grammar, or even the rendering of cached resources.
+			const { webFrame } = require('electron')
+
+			const zoomUp = () => {
+				// webFrame.getZoomFactor() + 1 --> This will increase the zoom by 100%
+				webFrame.setZoomFactor(webFrame.getZoomFactor() + 1)
+
+				// webFrame.getZoomLevel() + 1 --> This will increase the zoom by 20%
+				// webFrame.setZoomLevel(webFrame.getZoomLevel() + 1)
+			}
+
+			const zoomDown = () => {
+				webFrame.setZoomLevel(webFrame.getZoomLevel() - 1)
+			}
+
+			const zoomReset = () => {
+				webFrame.setZoomLevel(1)
+			}
+
+			// webFrame.getResourceUsage() represents external or linked resources of the webContents loaded in this web frame.
+			console.log(webFrame.getResourceUsage())
+    </script>
+  </body>
+</html>

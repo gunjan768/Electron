@@ -1,0 +1,46 @@
+{
+  "name": "codenity",
+  "version": "0.9.0",
+  "description": "This app is just for development purpose",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "elec": "nodemon --exec electron .",
+    "reset": "git reset --hard",
+    "build": "electron-builder --help",
+    "win-cert": "electron-builder create-self-signed-cert -p gunjan768",
+    "release": "electron-builder -w -p onTagOrDraft"
+  },
+  "author": "Gunjan Kumar",
+  "license": "ISC",
+  "dependencies": {
+    "@electron/remote": "^2.0.1",
+    "electron-log": "^4.4.4",
+    "electron-updater": "^4.6.1",
+    "electron-window-state": "^5.0.3",
+    "nodemon": "^2.0.15"
+  },
+  "devDependencies": {
+    "electron": "^16.0.6",
+    "electron-builder": "^22.14.5"
+  },
+  "build": {
+    "appId": "com.gunjan768.codenity",
+    "copyright": "Copyright gunjan768",
+    "publish": {
+      "provider": "github"
+    }
+  },
+  "wind": {
+    "certificateFile": "private/gunjan768.pfx",
+    "certificatePassword": "",
+    "verifyUpdateCodeSignature": false,
+    "publisherName": "gunjan768"
+  },
+  "mac": {
+    "category": "public.app-category.productivity"
+  },
+  "linux": {
+    "category": "Utility"
+  }
+}
